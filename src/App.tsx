@@ -1,29 +1,53 @@
 import { useState } from "react";
 
-function App() {
-  const [goodCnt, setGoodCnt] = useState(0);
-  const [neutralCnt, setNeutralCnt] = useState(0);
-  const [badCnt, setBadCnt] = useState(0);
+import { Section } from "./components/Section";
+import { Statistics } from "./components/Statistics";
+import { FeedbackOptions } from "./components/FeedbackOptions";
 
-  const increaseGoodCnt = () => {
-    setGoodCnt((prevState) => prevState + 1);
+function App() {
+  const [buttons, setButtons] = useState([
+    { text: "Good", count: 0 },
+    { text: "Neutral", count: 0 },
+    { text: "Bad", count: 0 },
+  ]);
+
+  const incrementCounter = (index: number) => {
+    setButtons((prevButtons) => {
+      const updatedButtons = [...prevButtons];
+      updatedButtons[index].count = prevButtons[index].count + 1;
+      return updatedButtons;
+    });
   };
-  const increaseNeutralCnt = () => {
-    setNeutralCnt((prevState) => prevState + 1);
+
+  const countTotalFeedback = () =>
+    buttons.reduce(
+      (accumulator, currentValue) => accumulator + currentValue.count,
+      0
+    );
+
+  const countPositiveFeedbackPercentage = () => {
+    const goodCount = buttons.find((button) => button.text === "Good")?.count;
+    return goodCount !== undefined
+      ? `${((goodCount / countTotalFeedback()) * 100).toFixed(2)}%`
+      : "no feedback";
   };
-  const increaseBadCnt = () => {
-    setBadCnt((prevState) => prevState + 1);
-  };
+
   return (
     <>
-      <h2>Please leave feedback</h2>
-      <button onClick={increaseGoodCnt}>Good</button>
-      <button onClick={increaseNeutralCnt}>Neutral</button>
-      <button onClick={increaseBadCnt}>Bad</button>
-      <h2>Statistic</h2>
-      <p>{`Good: ${goodCnt}`}</p>
-      <p>{`Neutral: ${neutralCnt}`}</p>
-      <p>{`Bad: ${badCnt}`}</p>
+      <Section title="Please leave feedback">
+        <FeedbackOptions options={buttons} onLeaveFeedback={incrementCounter} />
+      </Section>
+      <Section title="Statistic">
+        {countTotalFeedback() > 0 ? (
+          <Statistics
+            options={buttons}
+            total={countTotalFeedback()}
+            positivePercentage={countPositiveFeedbackPercentage()}
+          />
+        ) : (
+          "No feedback given"
+        )}
+      </Section>
     </>
   );
 }
