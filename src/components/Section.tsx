@@ -7,11 +7,9 @@ interface SectionProps {
 export const Section = ({
   title,
   children,
-}: PropsWithChildren<SectionProps>) => {
-  return (
-    <section>
-      <h3>{title}</h3>
-      {children}
-    </section>
-  );
-};
+}: PropsWithChildren<SectionProps>) => (
+  <section>
+    <h3>{title}</h3>
+    {children}
+  </section>
+);
